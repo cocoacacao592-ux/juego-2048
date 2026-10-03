@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>2048</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #faf8ef;
+    text-align: center;
+    color: #776e65;
+}
+
+h1 {
+    font-size: 55px;
+    margin-bottom: 5px;
+}
+
+#tablero {
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+    background: #bbada0;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    border-radius: 10px;
+}
+
+.celda {
+    background: #cdc1b4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #8f7a66;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>2048</h1>
+<p>Puntuación: <span id="puntos">0</span></p>
+
+<div id="tablero"></div>
+
+<button onclick="nuevoJuego()">Nuevo juego</button>
+
+<script>
+
+let tablero;
+let puntos = 0;
+
+function nuevoJuego() {
+
+    tablero = Array(4).fill().map(() => Array(4).fill(0));
+    puntos = 0;
+
+    agregarNumero();
+    agregarNumero();
+
+    dibujar();
+}
+
+function agregarNumero() {
+
+    let vacias = [];
+
+    for(let i=0;i<4;i++) {
+        for(let j=0;j<4;j++) {
+            if(tablero[i][j] === 0)
+                vacias.push([i,j]);
+        }
+    }
+
+    if(vacias.length === 0) return;
+
+    let posicion =
+        vacias[Math.floor(Math.random()*vacias.length)];
+
+    tablero[posicion[0]][posicion[1]] =
+        Math.random() < 0.9 ? 2 : 4;
+}
+
+function dibujar() {
+
+    let contenedor = document.getElementById("tablero");
+
+    contenedor.innerHTML = "";
+
+    for(let i=0;i<4;i++) {
+
+        for(let j=0;j<4;j++) {
+
+            let celda = document.createElement("div");
+
+            celda.className = "celda";
+
+            celda.textContent =
+                tablero[i][j] === 0 ? "" : tablero[i][j];
+
+            contenedor.appendChild(celda);
+        }
+    }
+
+    document.getElementById("puntos").textContent = puntos;
+}
+
+function mover(direccion) {
+
+    let anterior = JSON.stringify(tablero);
+
+    if(direccion === "izquierda") moverIzquierda();
+
+    if(direccion === "derecha") {
+
+        tablero = tablero.map(fila =>
+            fila.reverse()
+        );
+
+        moverIzquierda();
+
+        tablero = tablero.map(fila =>
+            fila.reverse()
+        );
+    }
+
+    if(direccion === "arriba") {
+
+        tablero = tablero[0].map((_,i) =>
+            tablero.map(fila => fila[i])
+        );
+
+        moverIzquierda();
+
+        tablero = tablero[0].map((_,i) =>
+            tablero.map(fila => fila[i])
+        );
+    }
+
+    if(direccion === "abajo") {
+
+        tablero = tablero[0].map((_,i) =>
+            tablero.map(fila => fila[i]).reverse()
+        );
+
+        moverIzquierda();
+
+        tablero = tablero[0].map((_,i) =>
+            tablero.map(fila => fila[i]).reverse()
+        );
+    }
+
+    if(JSON.stringify(tablero) !== anterior) {
+
+        agregarNumero();
+        dibujar();
+    }
+}
+
+function moverIzquierda() {
+
+    for(let i=0;i<4;i++) {
+
+        let fila = tablero[i].filter(x => x !== 0);
+
+        for(let j=0;j<fila.length-1;j++) {
+
+            if(fila[j] === fila[j+1]) {
+
+                fila[j] *= 2;
+                puntos += fila[j];
+
+                fila.splice(j+1,1);
+            }
+        }
+
+        while(fila.length < 4)
+            fila.push(0);
+
+        tablero[i] = fila;
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+
+    if(e.key === "ArrowLeft)"
+        mover("izquierda");
+
+    if(e.key === "ArrowRight")
+        mover("derecha");
+
+    if(e.key === "ArrowUp")
+        mover("arriba");
+
+    if(e.key === "ArrowDown")
+        mover("abajo");
+});
+
+nuevoJuego();
+
+</script>
+
+</body>
+</html>
