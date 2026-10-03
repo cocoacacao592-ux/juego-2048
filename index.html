@@ -2,216 +2,868 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>2048</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>2048 - 4 Niveles</title>
 
 <style>
+
+* {
+    box-sizing: border-box;
+}
+
 body {
+    margin: 0;
+    min-height: 100vh;
     font-family: Arial, sans-serif;
-    background: #faf8ef;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.contenedor {
+    width: 100%;
+    max-width: 650px;
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     text-align: center;
-    color: #776e65;
 }
 
 h1 {
     font-size: 55px;
-    margin-bottom: 5px;
+    margin: 0;
+    color: #776e65;
+}
+
+.descripcion {
+    font-size: 17px;
+    margin: 5px 0 20px;
+}
+
+.informacion {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.caja {
+    background: #bbada0;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    min-width: 120px;
+}
+
+.caja span {
+    display: block;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.caja strong {
+    font-size: 22px;
+}
+
+#nivel {
+    color: #5a4fcf;
 }
 
 #tablero {
-    width: 400px;
-    height: 400px;
+    width: min(90vw, 500px);
+    height: min(90vw, 500px);
     margin: 20px auto;
     background: #bbada0;
     padding: 10px;
+    border-radius: 12px;
+
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    border-radius: 10px;
 }
 
-.celda {
+.casilla {
     background: #cdc1b4;
+    border-radius: 8px;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 30px;
+
+    font-size: clamp(25px, 7vw, 45px);
     font-weight: bold;
-    border-radius: 6px;
+    color: #776e65;
+
+    transition: 0.1s;
+}
+
+.n2 {
+    background: #eee4da;
+}
+
+.n4 {
+    background: #ede0c8;
+}
+
+.n8 {
+    background: #f2b179;
+    color: white;
+}
+
+.n16 {
+    background: #f59563;
+    color: white;
+}
+
+.n32 {
+    background: #f67c5f;
+    color: white;
+}
+
+.n64 {
+    background: #f65e3b;
+    color: white;
+}
+
+.n128 {
+    background: #edcf72;
+    color: white;
+    font-size: clamp(22px, 6vw, 38px);
+}
+
+.n256 {
+    background: #edcc61;
+    color: white;
+    font-size: clamp(22px, 6vw, 38px);
+}
+
+.n512 {
+    background: #edc850;
+    color: white;
+    font-size: clamp(22px, 6vw, 38px);
+}
+
+.n1024 {
+    background: #edc53f;
+    color: white;
+    font-size: clamp(20px, 5vw, 34px);
+}
+
+.n2048 {
+    background: #edc22e;
+    color: white;
+    font-size: clamp(20px, 5vw, 34px);
+    box-shadow: 0 0 20px gold;
+}
+
+.botones {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 button {
-    padding: 12px 20px;
     border: none;
-    border-radius: 8px;
-    background: #8f7a66;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: #5a4fcf;
     color: white;
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: bold;
     cursor: pointer;
 }
+
+button:hover {
+    background: #4035a0;
+}
+
+.controles {
+    margin-top: 15px;
+}
+
+.fila-botones {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 5px;
+}
+
+.flecha {
+    width: 55px;
+    height: 45px;
+    padding: 0;
+    font-size: 20px;
+}
+
+#mensaje {
+    min-height: 30px;
+    margin: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #5a4fcf;
+}
+
+.reglas {
+    margin-top: 15px;
+    color: #555;
+    font-size: 14px;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>2048</h1>
-<p>Puntuación: <span id="puntos">0</span></p>
+<div class="contenedor">
 
-<div id="tablero"></div>
+    <h1>2048</h1>
 
-<button onclick="nuevoJuego()">Nuevo juego</button>
+    <p class="descripcion">
+        ¡Combina los números hasta llegar a 2048!
+    </p>
+
+    <div class="informacion">
+
+        <div class="caja">
+            <span>Nivel</span>
+            <strong id="nivel">1</strong>
+        </div>
+
+        <div class="caja">
+            <span>Puntuación</span>
+            <strong id="puntuacion">0</strong>
+        </div>
+
+        <div class="caja">
+            <span>Mejor</span>
+            <strong id="mejor">0</strong>
+        </div>
+
+    </div>
+
+    <div id="tablero"></div>
+
+    <div id="mensaje"></div>
+
+    <div class="botones">
+
+        <button onclick="reiniciar()">
+            🔄 Reiniciar
+        </button>
+
+        <button id="siguiente" onclick="siguienteNivel()" style="display:none;">
+            ➡️ Siguiente nivel
+        </button>
+
+    </div>
+
+    <div class="controles">
+
+        <div class="fila-botones">
+            <button class="flecha" onclick="mover('arriba')">
+                ⬆️
+            </button>
+        </div>
+
+        <div class="fila-botones">
+
+            <button class="flecha" onclick="mover('izquierda')">
+                ⬅️
+            </button>
+
+            <button class="flecha" onclick="mover('abajo')">
+                ⬇️
+            </button>
+
+            <button class="flecha" onclick="mover('derecha')">
+                ➡️
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="reglas">
+        Usa las flechas del teclado o los botones para mover los números.
+        <br>
+        Cuando dos números iguales se juntan, se suman.
+    </div>
+
+</div>
 
 <script>
 
-let tablero;
-let puntos = 0;
+/* ================================
+   CONFIGURACIÓN DE LOS NIVELES
+================================ */
 
-function nuevoJuego() {
+const niveles = [
 
-    tablero = Array(4).fill().map(() => Array(4).fill(0));
-    puntos = 0;
+    {
+        numero: 1,
+        nombre: "Fácil",
+        objetivo: 128
+    },
+
+    {
+        numero: 2,
+        nombre: "Normal",
+        objetivo: 512
+    },
+
+    {
+        numero: 3,
+        nombre: "Difícil",
+        objetivo: 1024
+    },
+
+    {
+        numero: 4,
+        nombre: "Experto",
+        objetivo: 2048
+    }
+
+];
+
+/* ================================
+   VARIABLES
+================================ */
+
+let nivelActual = 0;
+
+let tablero = [];
+
+let puntuacion = 0;
+
+let mejorPuntuacion =
+    Number(localStorage.getItem("mejor2048")) || 0;
+
+let juegoTerminado = false;
+
+let nivelCompletado = false;
+
+
+/* ================================
+   INICIAR JUEGO
+================================ */
+
+function iniciarJuego() {
+
+    tablero = [
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0]
+    ];
+
+    puntuacion = 0;
+
+    juegoTerminado = false;
+
+    nivelCompletado = false;
+
+    document.getElementById("mensaje").textContent = "";
+
+    document.getElementById("siguiente").style.display =
+        "none";
 
     agregarNumero();
+
     agregarNumero();
 
-    dibujar();
+    mostrarTablero();
+
 }
+
+
+/* ================================
+   MOSTRAR TABLERO
+================================ */
+
+function mostrarTablero() {
+
+    const elemento =
+        document.getElementById("tablero");
+
+    elemento.innerHTML = "";
+
+    for (let fila = 0; fila < 4; fila++) {
+
+        for (let columna = 0; columna < 4; columna++) {
+
+            const casilla =
+                document.createElement("div");
+
+            const numero =
+                tablero[fila][columna];
+
+            casilla.className = "casilla";
+
+            if (numero !== 0) {
+
+                casilla.textContent = numero;
+
+                casilla.classList.add("n" + numero);
+
+            }
+
+            elemento.appendChild(casilla);
+
+        }
+
+    }
+
+    document.getElementById("puntuacion").textContent =
+        puntuacion;
+
+    document.getElementById("mejor").textContent =
+        mejorPuntuacion;
+
+    document.getElementById("nivel").textContent =
+        niveles[nivelActual].numero;
+}
+
+
+/* ================================
+   AGREGAR NÚMERO
+================================ */
 
 function agregarNumero() {
 
-    let vacias = [];
+    const espacios = [];
 
-    for(let i=0;i<4;i++) {
-        for(let j=0;j<4;j++) {
-            if(tablero[i][j] === 0)
-                vacias.push([i,j]);
+    for (let fila = 0; fila < 4; fila++) {
+
+        for (let columna = 0; columna < 4; columna++) {
+
+            if (tablero[fila][columna] === 0) {
+
+                espacios.push({
+                    fila: fila,
+                    columna: columna
+                });
+
+            }
+
         }
+
     }
 
-    if(vacias.length === 0) return;
+    if (espacios.length === 0) {
+        return;
+    }
 
-    let posicion =
-        vacias[Math.floor(Math.random()*vacias.length)];
+    const posicion =
+        espacios[Math.floor(Math.random() * espacios.length)];
 
-    tablero[posicion[0]][posicion[1]] =
+    tablero[posicion.fila][posicion.columna] =
         Math.random() < 0.9 ? 2 : 4;
+
 }
 
-function dibujar() {
 
-    let contenedor = document.getElementById("tablero");
-
-    contenedor.innerHTML = "";
-
-    for(let i=0;i<4;i++) {
-
-        for(let j=0;j<4;j++) {
-
-            let celda = document.createElement("div");
-
-            celda.className = "celda";
-
-            celda.textContent =
-                tablero[i][j] === 0 ? "" : tablero[i][j];
-
-            contenedor.appendChild(celda);
-        }
-    }
-
-    document.getElementById("puntos").textContent = puntos;
-}
+/* ================================
+   MOVER
+================================ */
 
 function mover(direccion) {
 
-    let anterior = JSON.stringify(tablero);
+    if (juegoTerminado || nivelCompletado) {
+        return;
+    }
 
-    if(direccion === "izquierda") moverIzquierda();
+    let tableroAnterior =
+        JSON.stringify(tablero);
 
-    if(direccion === "derecha") {
-
-        tablero = tablero.map(fila =>
-            fila.reverse()
-        );
+    if (direccion === "izquierda") {
 
         moverIzquierda();
 
-        tablero = tablero.map(fila =>
-            fila.reverse()
-        );
     }
 
-    if(direccion === "arriba") {
+    if (direccion === "derecha") {
 
-        tablero = tablero[0].map((_,i) =>
-            tablero.map(fila => fila[i])
-        );
+        moverDerecha();
 
-        moverIzquierda();
-
-        tablero = tablero[0].map((_,i) =>
-            tablero.map(fila => fila[i])
-        );
     }
 
-    if(direccion === "abajo") {
+    if (direccion === "arriba") {
 
-        tablero = tablero[0].map((_,i) =>
-            tablero.map(fila => fila[i]).reverse()
-        );
+        moverArriba();
 
-        moverIzquierda();
-
-        tablero = tablero[0].map((_,i) =>
-            tablero.map(fila => fila[i]).reverse()
-        );
     }
 
-    if(JSON.stringify(tablero) !== anterior) {
+    if (direccion === "abajo") {
+
+        moverAbajo();
+
+    }
+
+    let tableroNuevo =
+        JSON.stringify(tablero);
+
+    if (tableroAnterior !== tableroNuevo) {
 
         agregarNumero();
-        dibujar();
+
+        mostrarTablero();
+
+        comprobarVictoria();
+
+        if (!juegoTerminado &&
+            !nivelCompletado) {
+
+            comprobarGameOver();
+
+        }
+
     }
+
 }
+
+
+/* ================================
+   PROCESAR FILA
+================================ */
+
+function procesarFila(fila) {
+
+    let numeros =
+        fila.filter(numero => numero !== 0);
+
+    let resultado = [];
+
+    for (let i = 0; i < numeros.length; i++) {
+
+        if (
+            numeros[i] === numeros[i + 1]
+        ) {
+
+            let nuevo =
+                numeros[i] * 2;
+
+            resultado.push(nuevo);
+
+            puntuacion += nuevo;
+
+            if (puntuacion > mejorPuntuacion) {
+
+                mejorPuntuacion = puntuacion;
+
+                localStorage.setItem(
+                    "mejor2048",
+                    mejorPuntuacion
+                );
+
+            }
+
+            i++;
+
+        } else {
+
+            resultado.push(numeros[i]);
+
+        }
+
+    }
+
+    while (resultado.length < 4) {
+        resultado.push(0);
+    }
+
+    return resultado;
+}
+
+
+/* ================================
+   IZQUIERDA
+================================ */
 
 function moverIzquierda() {
 
-    for(let i=0;i<4;i++) {
+    for (let fila = 0; fila < 4; fila++) {
 
-        let fila = tablero[i].filter(x => x !== 0);
+        tablero[fila] =
+            procesarFila(tablero[fila]);
 
-        for(let j=0;j<fila.length-1;j++) {
-
-            if(fila[j] === fila[j+1]) {
-
-                fila[j] *= 2;
-                puntos += fila[j];
-
-                fila.splice(j+1,1);
-            }
-        }
-
-        while(fila.length < 4)
-            fila.push(0);
-
-        tablero[i] = fila;
     }
+
 }
 
-document.addEventListener("keydown", function(e) {
 
-    if(e.key === "ArrowLeft)"
+/* ================================
+   DERECHA
+================================ */
+
+function moverDerecha() {
+
+    for (let fila = 0; fila < 4; fila++) {
+
+        let filaInvertida =
+            tablero[fila].slice().reverse();
+
+        filaInvertida =
+            procesarFila(filaInvertida);
+
+        tablero[fila] =
+            filaInvertida.reverse();
+
+    }
+
+}
+
+
+/* ================================
+   ARRIBA
+================================ */
+
+function moverArriba() {
+
+    for (let columna = 0; columna < 4; columna++) {
+
+        let fila = [];
+
+        for (let i = 0; i < 4; i++) {
+
+            fila.push(
+                tablero[i][columna]
+            );
+
+        }
+
+        fila =
+            procesarFila(fila);
+
+        for (let i = 0; i < 4; i++) {
+
+            tablero[i][columna] =
+                fila[i];
+
+        }
+
+    }
+
+}
+
+
+/* ================================
+   ABAJO
+================================ */
+
+function moverAbajo() {
+
+    for (let columna = 0; columna < 4; columna++) {
+
+        let fila = [];
+
+        for (let i = 0; i < 4; i++) {
+
+            fila.push(
+                tablero[i][columna]
+            );
+
+        }
+
+        fila =
+            fila.reverse();
+
+        fila =
+            procesarFila(fila);
+
+        fila =
+            fila.reverse();
+
+        for (let i = 0; i < 4; i++) {
+
+            tablero[i][columna] =
+                fila[i];
+
+        }
+
+    }
+
+}
+
+
+/* ================================
+   COMPROBAR VICTORIA
+================================ */
+
+function comprobarVictoria() {
+
+    const objetivo =
+        niveles[nivelActual].objetivo;
+
+    for (let fila = 0; fila < 4; fila++) {
+
+        for (let columna = 0; columna < 4; columna++) {
+
+            if (
+                tablero[fila][columna] >= objetivo
+            ) {
+
+                nivelCompletado = true;
+
+                document.getElementById("mensaje")
+                    .textContent =
+                    "🎉 ¡Nivel completado!";
+
+                if (nivelActual < 3) {
+
+                    document.getElementById("siguiente")
+                        .style.display =
+                        "inline-block";
+
+                } else {
+
+                    document.getElementById("mensaje")
+                        .textContent =
+                        "🏆 ¡FELICIDADES! ¡Completaste los 4 niveles!";
+
+                }
+
+                return;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* ================================
+   GAME OVER
+================================ */
+
+function comprobarGameOver() {
+
+    for (let fila = 0; fila < 4; fila++) {
+
+        for (let columna = 0; columna < 4; columna++) {
+
+            if (
+                tablero[fila][columna] === 0
+            ) {
+
+                return;
+
+            }
+
+            if (
+                columna < 3 &&
+                tablero[fila][columna] ===
+                tablero[fila][columna + 1]
+            ) {
+
+                return;
+
+            }
+
+            if (
+                fila < 3 &&
+                tablero[fila][columna] ===
+                tablero[fila + 1][columna]
+            ) {
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    juegoTerminado = true;
+
+    document.getElementById("mensaje")
+        .textContent =
+        "😢 ¡No hay más movimientos!";
+
+}
+
+
+/* ================================
+   SIGUIENTE NIVEL
+================================ */
+
+function siguienteNivel() {
+
+    if (nivelActual < 3) {
+
+        nivelActual++;
+
+        iniciarJuego();
+
+    }
+
+}
+
+
+/* ================================
+   REINICIAR
+================================ */
+
+function reiniciar() {
+
+    iniciarJuego();
+
+}
+
+
+/* ================================
+   TECLADO
+================================ */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "ArrowLeft") {
+
+        event.preventDefault();
+
         mover("izquierda");
 
-    if(e.key === "ArrowRight")
+    }
+
+    if (event.key === "ArrowRight") {
+
+        event.preventDefault();
+
         mover("derecha");
 
-    if(e.key === "ArrowUp")
+    }
+
+    if (event.key === "ArrowUp") {
+
+        event.preventDefault();
+
         mover("arriba");
 
-    if(e.key === "ArrowDown")
+    }
+
+    if (event.key === "ArrowDown") {
+
+        event.preventDefault();
+
         mover("abajo");
+
+    }
+
 });
 
-nuevoJuego();
+
+/* ================================
+   COMENZAR
+================================ */
+
+iniciarJuego();
 
 </script>
 
